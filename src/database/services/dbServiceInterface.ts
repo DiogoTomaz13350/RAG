@@ -1,8 +1,15 @@
 export const DB_SERVICE = Symbol('DB_SERVICE');
 
-import { Document, DocumentMatch } from '../domain/documentModel';
+import { Result } from 'src/shared/result';
+import { DocumentMatch } from '../domain/documentModel';
 
 export interface IDbService {
-  findAll(): Promise<Document[]>;
-  findClosest(embedding: number[], limit?: number): Promise<DocumentMatch[]>;
+  insertEmbedding(content: string, embedding: number[]): Promise<void>;
+  findClosestFive(
+    embedding: number[],
+  ): Promise<Result<DocumentMatch[], findClosestError>>;
+}
+
+export enum findClosestError {
+  NotMatchesFound,
 }

@@ -16,5 +16,5 @@ export default new DataSource({
   username: requireEnv('POSTGRES_USER'),
   password: requireEnv('POSTGRES_PASSWORD'),
   database: requireEnv('POSTGRES_DB'),
-  migrations: [__dirname + '/migrations/*.{ts,js}'],
+  migrations: [__dirname + '/../migrations/*.{ts,js}'],
 });

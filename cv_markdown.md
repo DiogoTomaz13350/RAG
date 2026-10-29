@@ -1,69 +1,38 @@
-# Diogo Tomáz
-**Software Engineer**
-
-- **Phone:** +351 913520264 (primary); +31 681942243 (alternative)
-- **Email:** diogo.work123@gmail.com
-- **Location:** Venray, Limburg
-
-## Summary
-
-Backend Engineer experienced in building scalable cloud-native services, distributed systems, and production APIs. Skilled in C#, .NET, TypeScript, Node.js, GCP, PostgreSQL, and Redis, with hands-on experience in system architecture, observability, fault tolerance, and AI agent integrations. Focused on building reliable, maintainable backend systems and delivering end-to-end solutions.
-
-## Skills
-
-- **Backend and architecture:** Backend Architecture, Distributed Systems
-- **Programming languages and frameworks:** C#, TypeScript, Node.js, .NET, Kotlin, Python
-- **Cloud and data:** Cloud, GCP, PostgreSQL, Redis
-- **Infrastructure and observability:** Docker, OpenTelemetry, Grafana, CI/CD, Git
-- **AI engineering:** AI Engineering, Genkit, Mastra, pgvector
-
-## Experience
-
-### TouchePulse — Backend Engineer
-**August 2025 – 1 October 2026**
-
-- Developed AI agent integrations using Google Genkit, defining custom tools and flows that enabled LLM-powered agents to interpret user commands, leverage conversation history, and dynamically execute application actions. Enabled voice-driven interaction with core application functionalities.
-- Achieved an approximately 100% production success rate by architecting and modernizing a scalable GCP-based backend, eliminating legacy technical debt and resolving distributed state consistency issues through Redis-backed coordination patterns.
-- Led the redesign and implementation of the company’s core backend platform, rebuilding the routing, route enhancement, and navigation systems.
-- Designed and implemented observability infrastructure using OpenTelemetry and Grafana Cloud.
-- Strengthened system reliability through robust retry mechanisms, queue handling, and defensive design for external API and long-running request failures.
-- Designed, implemented, and maintained the application’s RESTful API and WebSocket endpoints, defining API contracts, data schemas, and communication flows. Collaborated with the frontend team to ensure seamless integration and maintainability.
-
-### SKY — Mobile Developer
-**April 2025 – August 2025**
-
-- Implemented a centralized configuration repository for UI parameters, enabling product and analytics teams to independently manage A/B testing of UI changes without requiring engineering support or code deployments.
-- Implemented a gradient background that updates based on the current main box selection.
-- Added a pipeline for assigning icons to specific rails based on configuration objects.
-
-### Investigation Department of FEUP — Intern Backend Engineer
-**June 2024 – April 2025**
-
-- Contributed to the enhancement of a graph-based software platform for creating and managing complex diagrams and network structures.
-- Developed features for collapsing and expanding sub-trees.
-- Implemented temporal lines, composite edges, and nodes.
-
-## Engineering Projects & System Design
-
-### Factory Telemetry Platform — Distributed IIoT System
-**Personal Architecture Project**
-
-- Designed a scalable Industrial IoT telemetry platform simulating factory environments using a decoupled, edge-first CQRS architecture.
-- Built a distributed system for simulating machines streaming telemetry via MQTT across ingestion, processing, and alerting services.
-- Implemented hot/cold data separation using Redis for real-time state and PostgreSQL for historical telemetry storage, optimizing for low-latency access and durability.
-- Developed an AlertEngine for anomaly detection (overheating, pressure spikes, machine downtime) based on streaming machine state.
-- Designed a fully decoupled microservices architecture (Simulator, API, AlertEngine, Observability) with fault isolation between services.
-- **Git repository:** https://github.com/DiogoTomaz13350/FactoryTelemetryPlatform
-
-## Education
-
-### FEUP, University of Porto
-**Bachelor’s in Software Engineering (2019–2023)**
-
-### Cambridge School, Funchal
-**Cambridge C1**
-
-## Languages
-
-- **English:** Fluent
-- **Dutch:** Starting to Learn
+Diogo Tomáz is a Software Engineer based in Venray, Limburg.
+Diogo is a Backend Engineer experienced in building scalable cloud-native services, distributed systems, and production APIs.
+Diogo is skilled in C#, .NET, TypeScript, Node.js, GCP, PostgreSQL, and Redis.
+Diogo has hands-on experience in system architecture, observability, fault tolerance, and AI agent integrations.
+Diogo focuses on building reliable, maintainable backend systems and delivering end-to-end solutions.
+Diogo knows the programming languages C#, TypeScript, Node.js, .NET, Kotlin, and Python.
+Diogo has backend skills in Backend Architecture and Distributed Systems.
+Diogo has cloud and data skills in Cloud, GCP, PostgreSQL, and Redis.
+Diogo has infrastructure and observability skills in Docker, OpenTelemetry, Grafana, CI/CD, and Git.
+Diogo has AI engineering skills in Genkit, Mastra, and pgvector.
+Diogo worked as a Backend Engineer at TouchePulse from August 2025 to 1 October 2026.
+At TouchePulse, Diogo developed AI agent integrations using Google Genkit, with custom tools and flows that let LLM-powered agents interpret user commands, use conversation history, and execute application actions.
+At TouchePulse, Diogo enabled voice-driven interaction with the core application functionalities.
+At TouchePulse, Diogo achieved an approximately 100% production success rate by architecting and modernizing a scalable GCP-based backend.
+At TouchePulse, Diogo eliminated legacy technical debt and resolved distributed state consistency issues through Redis-backed coordination patterns.
+At TouchePulse, Diogo led the redesign and implementation of the core backend platform, rebuilding the routing, route enhancement, and navigation systems.
+At TouchePulse, Diogo designed and implemented observability infrastructure using OpenTelemetry and Grafana Cloud.
+At TouchePulse, Diogo strengthened system reliability with robust retry mechanisms, queue handling, and defensive design for external API and long-running request failures.
+At TouchePulse, Diogo designed, implemented, and maintained the RESTful API and WebSocket endpoints, and collaborated with the frontend team on API contracts, data schemas, and communication flows.
+Diogo worked as a Mobile Developer at SKY from April 2025 to August 2025.
+At SKY, Diogo implemented a centralized configuration repository for UI parameters, so product and analytics teams could manage A/B testing of UI changes without engineering support or code deployments.
+At SKY, Diogo implemented a gradient background that updates based on the current main box selection.
+At SKY, Diogo added a pipeline for assigning icons to specific rails based on configuration objects.
+Diogo worked as an Intern Backend Engineer at the Investigation Department of FEUP from June 2024 to April 2025.
+At FEUP, Diogo contributed to a graph-based software platform for creating and managing complex diagrams and network structures.
+At FEUP, Diogo developed features for collapsing and expanding sub-trees.
+At FEUP, Diogo implemented temporal lines, composite edges, and nodes.
+Diogo built the Factory Telemetry Platform, a personal architecture project and distributed IIoT system.
+The Factory Telemetry Platform simulates factory environments using a decoupled, edge-first CQRS architecture.
+The Factory Telemetry Platform has simulated machines streaming telemetry via MQTT across ingestion, processing, and alerting services.
+The Factory Telemetry Platform separates hot and cold data, using Redis for real-time state and PostgreSQL for historical telemetry storage.
+The Factory Telemetry Platform has an AlertEngine that detects anomalies such as overheating, pressure spikes, and machine downtime from streaming machine state.
+The Factory Telemetry Platform is a fully decoupled microservices architecture with Simulator, API, AlertEngine, and Observability services, with fault isolation between them.
+The Factory Telemetry Platform code is at https://github.com/DiogoTomaz13350/FactoryTelemetryPlatform.
+Diogo has a Bachelor's in Software Engineering from FEUP, University of Porto, completed from 2019 to 2023.
+Diogo holds a Cambridge C1 English certificate from Cambridge School in Funchal.
+Diogo speaks fluent English.
+Diogo is starting to learn Dutch.
