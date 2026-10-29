@@ -1,0 +1,4 @@
+FROM pgvector/pgvector:pg17
+
+# Enables the pgvector extension automatically on first database initialization
+COPY docker/init-pgvector.sql /docker-entrypoint-initdb.d/init-pgvector.sql
