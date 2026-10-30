@@ -1,98 +1,142 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# RAG
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A Retrieval-Augmented Generation (RAG) API built with **NestJS**, **PostgreSQL + pgvector**, **Google Gemini** and **Mastra**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Markdown documents are split into chunks, embedded with Gemini, and stored in Postgres. When a question arrives, an AI agent calls a retrieval tool that finds the five closest chunks (cosine distance) and answers using only that context.
 
-## Description
+## How It Works
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+```text
+Ingestion (npm run ingest)
+  Markdown file ──► split into sentences ──► Gemini embedding ──► documents table
+                    (trim, dedupe)            (1536-d vector)     (SHA-256 content_hash, no duplicates)
 
-## Project setup
-
-```bash
-$ npm install
+Question (GET /?question=...)
+  AppController ──► AgentService ──► Assistant Agent (Gemini Flash)
+                                          │ calls tool "findPossibleAnswers"
+                                          ▼
+                       embed question ──► pgvector cosine search (top 5) ──► answer from retrieved chunks
 ```
 
-## Compile and run the project
+## Project Structure
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```text
+src/
+├── main.ts                     # Bootstraps the HTTP app (PORT, default 3000)
+├── app.module.ts               # Root module (Database, Embedding, Agent)
+├── app.controller.ts           # GET / ?question=...
+├── agent/
+│   ├── agentModule.ts
+│   ├── service/                # AgentService (IAgentService, RagAgentError)
+│   └── mastra/
+│       ├── mastraFactory.ts    # Builds the Mastra instance
+│       ├── agents/             # Assistant agent (instructions + model + tools)
+│       └── tools/              # findPossibleAnswers retrieval tool
+├── embedding/
+│   ├── embeddingModule.ts
+│   ├── ingest.ts               # CLI entry point for ingestion
+│   └── services/               # EmbeddingService (chunking) + GeminiEmbeddingModel
+├── database/
+│   ├── databaseModule.ts       # TypeORM connection from .env
+│   ├── dataSource/             # DataSource used by the TypeORM CLI
+│   ├── migrations/             # documents table, HNSW index, content_hash
+│   ├── domain/                 # DocumentMatch
+│   └── services/               # DbService (insertEmbedding, findClosestFive)
+└── shared/result.ts            # Result<T, E> type (okey / err)
+docker/init-pgvector.sql        # Enables the vector extension on first DB init
+Dockerfile.postgres             # pgvector/pgvector:pg17 image
+docker-compose.yml              # Postgres service (rag-postgres)
+docs/                           # Development rules, spec template and feature specs
+cv_markdown.md                  # Default document ingested by `npm run ingest`
 ```
 
-## Run tests
+Each module exposes services through an interface and an injection token (`DB_SERVICE`, `EMBEDDING_MODEL`, `EMBEDDING_SERVICE`, `AGENT_SERVICE`). Services that can fail return a `Result<T, E>` instead of throwing.
+
+## Prerequisites
+
+- Node.js 22+ and npm
+- Docker (for PostgreSQL + pgvector)
+- A [Gemini API key](https://aistudio.google.com/apikey)
+
+## Getting Started
+
+1. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+2. **Create a `.env` file** in the project root (it is git-ignored):
+
+   ```env
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=5432
+   POSTGRES_USER=rag
+   POSTGRES_PASSWORD=change-me
+   POSTGRES_DB=rag
+   GEMINI_API_KEY=your-gemini-api-key
+   # Optional, defaults to 3000
+   PORT=3000
+   ```
+
+   `docker-compose.yml` fails with a clear message if any `POSTGRES_*` variable is missing.
+
+3. **Start PostgreSQL**
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. **Run the migrations**
+
+   ```bash
+   npm run migration:run
+   ```
+
+5. **Ingest a document** (defaults to `cv_markdown.md`)
+
+   ```bash
+   npm run ingest
+   npm run ingest -- path/to/file.md
+   ```
+
+6. **Start the API**
+
+   ```bash
+   npm run start:dev
+   ```
+
+## API
+
+### `GET /?question=<text>`
+
+Asks the RAG agent a question and returns the answer as plain text.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+curl "http://localhost:3000/?question=What%20programming%20languages%20do%20you%20know%3F"
 ```
 
-## Deployment
+| Status | Meaning |
+| --- | --- |
+| `200` | Answer text |
+| `400` | `question` is missing or blank |
+| `502` | The agent returned an empty response |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Database
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Managed through TypeORM migrations in `src/database/migrations` (never `synchronize`):
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+- `CreateDocuments` — enables `vector`, creates `documents (id, content, embedding VECTOR(1536))` and the `documents_embedding_idx` HNSW index (`vector_cosine_ops`).
+- `AddDocumentContentHash` — adds a unique `content_hash` (SHA-256) so re-ingesting the same content is a no-op (`ON CONFLICT DO NOTHING`).
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Scripts
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Command | Description |
+| --- | --- |
+| `npm run start:dev` | Start in watch mode |
+| `npm run start` / `start:prod` | Start once / run the compiled build (`dist/main`) |
+| `npm run build` | Compile with Nest CLI |
+| `npm run ingest [-- <file>]` | Chunk, embed and store a markdown file |
+| `npm run migration:run` / `migration:revert` / `migration:show` | Manage TypeORM migrations |
+| `npm run test` / `test:cov` / `test:e2e` | Unit tests / coverage / end-to-end tests |
+| `npm run lint` / `npm run format` | ESLint (with fix) / Prettier |
