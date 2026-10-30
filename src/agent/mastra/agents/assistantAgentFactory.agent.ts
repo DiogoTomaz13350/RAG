@@ -22,7 +22,7 @@ export function AssistantAgentFactory(
       If no relevant answers are found, respond accordingly without making assumptions.
     `,
 
-    model: { id: 'google/gemini-3.8-flash', apiKey },
+    model: { id: 'google/gemini-3.5-flash', apiKey },
 
     tools: {
       findPossibleAnswers: FindPossibleAnswersToolFactory(db, embeddingModel),

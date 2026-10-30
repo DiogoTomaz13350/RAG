@@ -27,7 +27,7 @@ export class AgentService implements IAgentService {
 
   async askRAGagent(prompt: string): Promise<Result<string, RagAgentError>> {
     const response = await this.mastra
-      .getAgent('assistantRagAgent')
+      .getAgent('assistantAgent')
       .generate(prompt);
     if (!response.text) {
       return err(RagAgentError.EmptyResponse);
