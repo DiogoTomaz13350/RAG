@@ -6,8 +6,8 @@ export type EmbedSummary = {
   chunks: number;
 };
 
-export enum EmbedMarkdownError {
-  FileNotFound,
+export enum EmbeddingServiceError {
+  EmptyFile,
   NoChunks,
   EmbeddingFailed,
 }
@@ -15,5 +15,5 @@ export enum EmbedMarkdownError {
 export interface IEmbeddingService {
   embedMarkdownFile(
     filePath: string,
-  ): Promise<Result<EmbedSummary, EmbedMarkdownError>>;
+  ): Promise<Result<EmbedSummary, EmbeddingServiceError>>;
 }

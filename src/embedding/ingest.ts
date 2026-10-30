@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
 import {
   EMBEDDING_SERVICE,
-  EmbedMarkdownError,
+  EmbeddingServiceError,
 } from './services/embeddingServiceInterface';
 import type { IEmbeddingService } from './services/embeddingServiceInterface';
 
@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     if (result.IsSuccess) {
       console.log(`Ingested ${result.value.chunks} chunks from ${filePath}`);
     } else {
-      console.error(`Ingestion failed: ${EmbedMarkdownError[result.error]}`);
+      console.error(`Ingestion failed: ${EmbeddingServiceError[result.error]}`);
       process.exitCode = 1;
     }
   } finally {

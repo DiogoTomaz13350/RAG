@@ -12,6 +12,6 @@ import { EMBEDDING_SERVICE } from './services/embeddingServiceInterface';
     { provide: EMBEDDING_MODEL, useClass: GeminiEmbeddingModel },
     { provide: EMBEDDING_SERVICE, useClass: EmbeddingService },
   ],
-  exports: [EMBEDDING_SERVICE],
+  exports: [EMBEDDING_SERVICE, EMBEDDING_MODEL],
 })
 export class EmbeddingModule {}
