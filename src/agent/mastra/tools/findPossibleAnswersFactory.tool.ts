@@ -10,10 +10,15 @@ export const FindPossibleAnswersToolFactory = (
   return createTool({
     id: 'find-possible-answer',
 
-    description: 'Find a set of possible answers to a given question',
+    description:
+      'Searches the knowledge base and returns the closest matching passages that may answer a question. Call it with the user question.',
 
     inputSchema: z.object({
-      question: z.string(),
+      question: z
+        .string()
+        .describe(
+          "The user's question, passed as-is (verbatim) to search the knowledge base",
+        ),
     }),
     outputSchema: z.array(z.string() || z.null()).optional(),
 

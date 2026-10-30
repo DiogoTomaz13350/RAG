@@ -69,14 +69,21 @@ Never expose secrets or commit credentials.
 
 For features, API changes, and behavior changes, delegate independent verification to a `task` sub-agent.
 
+The sub-agent has no access to the conversation, so the calling agent must pass it, in the prompt:
+- The feature/change under test and the files or areas affected.
+- The **acceptance criteria**, taken from the first source available:
+  1. The matching spec in `docs/specs/`, if one exists (pass its path).
+  2. The acceptance criteria stated in the user's request or by the implementing agent (write them out in the prompt).
+  3. If neither exists (e.g. testing existing code), the behavior observable from the code, existing tests, and README. State this explicitly and do not invent requirements.
+
 The sub-agent must independently:
 
-1. Read the relevant specification or acceptance criteria and `docs/DEVELOPMENT_RULES.md`.
+1. Read the acceptance criteria provided (and the spec file, if a path was given). Read `docs/DEVELOPMENT_RULES.md` only if it exists, and only to check that tests and code follow project conventions. It is not a source of acceptance criteria.
 2. Inspect the implementation and existing tests.
 3. Build the application and run the relevant tests.
 4. Check typechecking and linting for Node.js projects.
 5. Exercise affected endpoints with `curl` when applicable.
-6. Compare actual behavior against the acceptance criteria.
+6. Compare actual behavior against the acceptance criteria (or, when none were defined, against the observable intended behavior).
 7. Report failures, warnings, and tests that could not be executed.
 
 ## 5. Final Testing Report

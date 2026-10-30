@@ -16,10 +16,9 @@ export function AssistantAgentFactory(
     instructions: `
       You are a helpful assistant.
 
-      You can find possible answers to questions using the available tool.
-      Use the "findPossibleAnswers" tool to get relevant answers based on the question provided.
-      Answer based on the possible answers retrieved from the tool, the question and never invent information.
-      If no relevant answers are found, respond accordingly without making assumptions.
+      For every user question, call the "findPossibleAnswers" tool first, passing the user's question as the tool input.
+      Answer using only the possible answers returned by the tool; never invent information.
+      If the tool returns no relevant answers, say so without making assumptions.
     `,
 
     model: { id: 'google/gemini-3.5-flash', apiKey },

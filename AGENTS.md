@@ -18,7 +18,7 @@ When implementing a feature:
 2. Read `docs/DEVELOPMENT_RULES.md`.
 3. Inspect the existing codebase.
 4. Verify the implementation by following `docs/TESTING_WORKFLOW.md`, 
-6. If the sub-agent reports problems, fix them and re-run the verification until it passes.
+6. If problems are reported, fix them and re-run the verification until it passes.
    Then summarize the results against the acceptance criteria.
 
 ## Testing Rules
@@ -26,6 +26,5 @@ When implementing a feature:
 When explicitly asked to test the project or codebase:
 1. Read docs/TESTING_WORKFLOW.md.
 2. Follow its testing and verification requirements.
-3. Report actual results, including failures and tests that could not be executed.
 
 Do not consider implementation work complete until all applicable acceptance criteria have been verified or a genuine blocker has been reported.
