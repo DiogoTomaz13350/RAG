@@ -36,7 +36,7 @@ Add an `EmbeddingModule` with an `EmbeddingService` (behind an `IEmbeddingServic
 
 ### FR-002: Ingestion method
 - Description: `IEmbeddingService.embedMarkdownFile(filePath: string): Promise<Result<EmbedSummary, EmbedMarkdownError>>`. It is an **instance** method (not `static`) because it needs the injected `IDbService`.
-- Expected behavior: Reads the file (UTF-8), splits it into chunks (FR-003), and for each chunk gets its embedding from the injected `IEmbeddingModel` (`@Inject(EMBEDDING_MODEL)`, FR-004) and calls `db.insertEmbedding(content, embedding)`. `EmbedSummary` = `{ chunks: number }`. The service knows nothing about Gemini or HTTP.
+- Expected behavior: Reads the file (UTF-8), splits it into chunks (FR-003), and for each chunk gets its embedding from the injected `IEmbeddingModel` (`@Inject(EMBEDDING_MODEL)`, FR-004) using `EmbeddingTaskType.Document` and calls `db.insertEmbedding(content, embedding)`. `EmbedSummary` = `{ chunks: number }`. The service knows nothing about Gemini or HTTP.
 - Priority: Must
 - Validation and error handling: Returns `err(...)` for: `FileNotFound`, `NoChunks` (empty file) and `EmbeddingFailed` (the model returned an error `Result`; the run stops). Uses the project's `Result` helpers (`err`, `okey`) from `src/shared/result.ts`. DB failures are thrown (not caught) and stop the run; rows already inserted stay, which is safe because of FR-006.
 
@@ -54,8 +54,8 @@ Add an `EmbeddingModule` with an `EmbeddingService` (behind an `IEmbeddingServic
 
 ### FR-004: Embedding model provider (Gemini)
 - Description: A separate provider behind an interface, so the model can be swapped without touching the service. Files are in `src/embedding/services/`.
-  - `geminiEmbeddingModelInterfaceService.ts`: `EMBEDDING_MODEL = Symbol('EMBEDDING_MODEL')`, `IEmbeddingModel { embed(text: string): Promise<Result<number[], EmbeddingModelError>> }` (one text in, one vector out) and `enum EmbeddingModelError { FailedToEmbed }`.
-  - `geminiEmbeddingModelService.ts`: `GeminiEmbeddingModel implements IEmbeddingModel`, `@Injectable()`, injects `ConfigService`. Makes one request per text to the Gemini API `models/gemini-embedding-001` (`embedContent`) with `outputDimensionality: 1536` and `taskType: RETRIEVAL_DOCUMENT`, using the global `fetch` (no new dependency), and returns `ok(embedding.values)`.
+  - `geminiEmbeddingModelInterfaceService.ts`: `EMBEDDING_MODEL = Symbol('EMBEDDING_MODEL')`, `enum EmbeddingTaskType { Document = 'RETRIEVAL_DOCUMENT', Query = 'RETRIEVAL_QUERY' }`, `IEmbeddingModel { embed(text: string, taskType: EmbeddingTaskType): Promise<Result<number[], EmbeddingModelError>> }` (one text in, one vector out) and `enum EmbeddingModelError { FailedToEmbed }`. Gemini produces different vectors per `taskType` (tuned for asymmetric search: short interrogative questions vs. long declarative passages), so `RETRIEVAL_DOCUMENT` is used for stored text (ingestion) and `RETRIEVAL_QUERY` for the user's question (search).
+  - `geminiEmbeddingModelService.ts`: `GeminiEmbeddingModel implements IEmbeddingModel`, `@Injectable()`, injects `ConfigService`. Makes one request per text to the Gemini API `models/gemini-embedding-001` (`embedContent`) with `outputDimensionality: 1536` and the `taskType` passed by the caller, using the global `fetch` (no new dependency), and returns `ok(embedding.values)`.
 - Expected behavior: Intentionally minimal: no batching, no retries, no logging, no `try/catch`, no vector post-processing. Vectors are not normalized because the search uses cosine distance (`<=>`), which is scale-invariant. A vector with the wrong dimension is rejected by the `VECTOR(1536)` column.
 - Priority: Must
 - Validation and error handling: A non-OK HTTP response returns `err(EmbeddingModelError.FailedToEmbed)`; the service maps it to `EmbedMarkdownError.EmbeddingFailed`, and `ingest.ts` prints it and exits with code 1.

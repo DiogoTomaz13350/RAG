@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { DB_SERVICE } from '../../database/services/dbServiceInterface';
 import type { IDbService } from '../../database/services/dbServiceInterface';
 import { err, okey, Result } from '../../shared/result';
-import { EMBEDDING_MODEL } from './geminiEmbeddingModelInterfaceService';
+import { EMBEDDING_MODEL, EmbeddingTaskType } from './geminiEmbeddingModelInterfaceService';
 import type { IEmbeddingModel } from './geminiEmbeddingModelInterfaceService';
 import {
   EmbedSummary,
@@ -34,7 +34,7 @@ export class EmbeddingService implements IEmbeddingService {
     }
 
     for (const chunk of chunks) {
-      const embedding = await this.model.embed(chunk);
+      const embedding = await this.model.embed(chunk, EmbeddingTaskType.Document);
       if (!embedding.IsSuccess) {
         return err(EmbeddingServiceError.EmbeddingFailed);
       }

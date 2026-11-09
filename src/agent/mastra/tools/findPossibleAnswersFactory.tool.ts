@@ -1,6 +1,6 @@
 import { createTool } from '@mastra/core/tools';
 import { IDbService } from 'src/database/services/dbServiceInterface';
-import { IEmbeddingModel } from 'src/embedding/services/geminiEmbeddingModelInterfaceService';
+import { IEmbeddingModel, EmbeddingTaskType } from 'src/embedding/services/geminiEmbeddingModelInterfaceService';
 import { z } from 'zod';
 
 export const FindPossibleAnswersToolFactory = (
@@ -20,10 +20,10 @@ export const FindPossibleAnswersToolFactory = (
           "The user's question, passed as-is (verbatim) to search the knowledge base",
         ),
     }),
-    outputSchema: z.array(z.string() || z.null()).optional(),
+    outputSchema: z.array(z.string()),
 
     execute: async ({ question }) => {
-      const embedding = await model.embed(question);
+      const embedding = await model.embed(question, EmbeddingTaskType.Query);
       if (!embedding.IsSuccess) {
         return [];
       }

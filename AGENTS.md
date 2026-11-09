@@ -16,7 +16,6 @@ When brainstorming or documenting/specing a feature:
 When implementing a feature:
 1. Read the relevant approved specification in `docs/specs/` (if none exists, use the user's request as the acceptance criteria and state them).
 2. Read `docs/DEVELOPMENT_RULES.md`.
-3. Inspect the existing codebase.
 4. Verify the implementation by following `docs/TESTING_WORKFLOW.md`, 
 6. If problems are reported, fix them and re-run the verification until it passes.
    Then summarize the results against the acceptance criteria.

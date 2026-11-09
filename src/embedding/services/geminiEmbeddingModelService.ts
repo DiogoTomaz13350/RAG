@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IEmbeddingModel } from './geminiEmbeddingModelInterfaceService';
-import { err, okey, Result } from 'src/shared/result';
+import {
+  EmbeddingTaskType,
+  IEmbeddingModel,
+} from './geminiEmbeddingModelInterfaceService';
+import { err, okey, Result } from '../../shared/result';
 import { EmbeddingModelError } from './geminiEmbeddingModelInterfaceService';
 
 @Injectable()
 export class GeminiEmbeddingModel implements IEmbeddingModel {
   constructor(private readonly config: ConfigService) {}
 
-  async embed(text: string): Promise<Result<number[], EmbeddingModelError>> {
+  async embed(
+    text: string,
+    taskType: EmbeddingTaskType,
+  ): Promise<Result<number[], EmbeddingModelError>> {
     const response: Response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent',
       {
@@ -19,7 +25,7 @@ export class GeminiEmbeddingModel implements IEmbeddingModel {
         },
         body: JSON.stringify({
           content: { parts: [{ text }] },
-          taskType: 'RETRIEVAL_DOCUMENT',
+          taskType,
           outputDimensionality: 1536,
         }),
       },
